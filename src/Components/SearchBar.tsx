@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useRef } from "react";
 
 function SearchBar() {
   const apiKey = "ef05a7ca07b7488bb3031810242602";
@@ -7,12 +7,41 @@ function SearchBar() {
   const [displayLoading, setDisplayLoading] = useState("hidden");
   const [displayLoadingAutoComplete, setDisplayLoadingAutoComplete] =
     useState("hidden");
+  const [hideSearchResults, setHideSearchResults] = useState("hidden");
   const [initialSearch, setInitialSearch] = useState("");
+
+  const [selectedItemIndex, setSelectedItemIndex] = useState(-1);
+
+  const [isHovered, setIsHovered] = useState(false);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const [movePlaceHolder, setMovePlaceHolder] = useState("");
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!isHovered) {
+      if (e.key === "ArrowUp") {
+        // Move selection up
+        setSelectedItemIndex((prevIndex) => Math.max(prevIndex - 1, -1));
+      } else if (e.key === "ArrowDown") {
+        // Move selection down
+        setSelectedItemIndex((prevIndex) =>
+          Math.min(prevIndex + 1, cityNames.length - 1)
+        );
+      }
+    }
+
+    if (e.key === "Enter") {
+      getWeatherData(textBoxValue);
+      setAutoCompleteHidden("hidden");
+    }
+  };
 
   const [cityNames, setCityNames] = useState<string[]>([]);
 
   const fetchAutoCompleteData = async (input: string) => {
     setDisplayLoadingAutoComplete("block");
+    setHideSearchResults("hidden");
 
     await fetch(
       `http://api.weatherapi.com/v1/search.json?key=${apiKey}&q=${input}`
@@ -25,6 +54,7 @@ function SearchBar() {
       })
       .then((data) => {
         setDisplayLoadingAutoComplete("hidden");
+        setHideSearchResults("block");
         const newCityNames = data.map((city: any) => city.name);
         setCityNames(newCityNames);
       })
@@ -46,27 +76,33 @@ function SearchBar() {
     fetchAutoCompleteData(e.target.value);
   };
 
-  const enterKeySubmitBtn = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      getWeatherData(textBoxValue);
-    }
-  };
-
   const handleFocus = () => {
     setAutoCompleteHidden("block");
+
+    setMovePlaceHolder("transform translate-y-[-1.2em] transition-all linear");
   };
 
   const hideAutoComplete = () => {
     setAutoCompleteHidden("hidden");
+    setMovePlaceHolder("transform translate-y-[0em] transition-all linear");
   };
 
   const focusSearch = (name: string) => {
+    setIsHovered(true);
     setTextBoxValue(name);
     console.log("You hovered to one of options");
   };
 
+  const autoCompleteMouseOut = () => {
+    setIsHovered(false);
+  };
+
   const outOfFocus = () => {
     setTextBoxValue(initialSearch);
+  };
+
+  const placeHolderClick = () => {
+    setMovePlaceHolder("transform translate-y-[-1.2em] transition-all linear");
   };
 
   const [country, setCountry] = useState("");
@@ -80,6 +116,12 @@ function SearchBar() {
     setDisplayLoading("block");
     setInfoHidden("hidden");
     setDisplayError("hidden");
+    setAutoCompleteHidden("hidden");
+
+    setTextBoxValue("");
+    setInitialSearch("");
+    inputRef.current?.blur();
+    setMovePlaceHolder("transform translate-y-[0em] transition-all linear");
 
     await fetch(
       `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`
@@ -110,9 +152,6 @@ function SearchBar() {
           error
         );
       });
-
-    setTextBoxValue("");
-    setInitialSearch("");
   };
 
   const handleSubmitBtn = () => {
@@ -122,16 +161,25 @@ function SearchBar() {
   const handleAutoComplete = (name: string) => {
     getWeatherData(name);
     setAutoCompleteHidden("hidden");
+
+    setTextBoxValue("");
+    setInitialSearch("");
   };
 
   return (
     <div className="font-varela-round flex items-center justify-center h-screen bg-gradient-to-b from-dark1_blue to-dark2_blue">
-      <div className="flex items-center justify-center flex-col h-[20em] w-[28em] bg-light1_blue/15 backdrop-blur-[40px] border-solid border-2 rounded-xl border-black md:w-[35em] z-20">
+      <div className="flex items-center justify-center flex-col h-[20em] w-[28em] bg-light1_blue backdrop-blur-[40px]  rounded-xl md:w-[35em] z-20">
         <div
           className="absolute w-screen h-screen z-0"
           onClick={hideAutoComplete}
         ></div>
         <div className="flex items-center justify-center flex-col md:flex-row z-10">
+          <h1
+            className={`absolute ml-[1em] mb-[3.5em] bg-light1_blue font-bold text-dark2_blue md:mt-[3.5em] md:mr-[5.5em] ${movePlaceHolder}`}
+            onClick={placeHolderClick}
+          >
+            Enter a city
+          </h1>
           <div>
             <div className="absolute bg-dark2_blue h-[2.4em] flex items-center justify-center rounded-[0.3em] w-[2.5em]">
               <img
@@ -153,10 +201,15 @@ function SearchBar() {
                 </li>
                 {cityNames.map((name, index) => (
                   <li
-                    className="flex bg-dark2_blue text-light1_blue hover:bg-light1_blue hover:text-dark2_blue w-[24em] h-max pt-[0.8em] pb-[0.8em] pl-[3em] cursor-pointer"
+                    className={
+                      index === selectedItemIndex
+                        ? `flex bg-light1_blue text-dark2_blue hover:bg-light1_blue hover:text-dark2_blue w-[24em] h-max pt-[0.8em] pb-[0.8em] pl-[3em] cursor-pointer ${hideSearchResults}`
+                        : `flex bg-dark2_blue text-light1_blue hover:bg-light1_blue hover:text-dark2_blue w-[24em] h-max pt-[0.8em] pb-[0.8em] pl-[3em] cursor-pointer ${hideSearchResults}`
+                    }
                     key={index}
                     onClick={() => handleAutoComplete(name)}
                     onMouseOver={() => focusSearch(name)}
+                    onMouseOut={autoCompleteMouseOut}
                   >
                     {name}
                   </li>
@@ -164,20 +217,20 @@ function SearchBar() {
               </ul>
             </div>
             <input
-              className="text-black rounded-lg border-b-2 border-dark2_blue focus:border-2 outline-none w-[24em] h-10 bg-light1_blue placeholder-dark2_blue pl-12"
+              className="text-black rounded-lg border-b-2 border-dark2_blue outline-none w-[24em] h-10 bg-light1_blue border-2 pl-12"
               type="text"
               name="search"
+              ref={inputRef}
               value={textBoxValue}
               autoComplete="off"
-              placeholder="Enter a City ..."
               onChange={handleChange}
               onFocus={handleFocus}
-              onKeyDown={enterKeySubmitBtn}
+              onKeyDown={handleKeyDown}
             />
           </div>
 
           <button
-            className="rounded-lg border-2 mt-[1em] ml-[1em] h-[2.5rem] w-[5em] bg-dark1_blue hover:bg-light1_blue transition ease-in-out duration-500 md:mt-0"
+            className="rounded-lg border-2 border-dark2_blue text-dark2_blue font-bold mt-[1em] ml-[1em] h-[2.5rem] w-[5em] bg-dark1_blue hover:bg-light1_blue transition ease-in-out duration-500 md:mt-0"
             onClick={handleSubmitBtn}
           >
             Submit
@@ -185,7 +238,7 @@ function SearchBar() {
         </div>
 
         <div
-          className={`flex items-center justify-center flex-col mt-[1em] ml-[1em] md:mt-[3em] ${infoHidden}`}
+          className={`flex items-center justify-center flex-col mt-[1em] ml-[1em] md:mt-[3em] text-dark2_blue ${infoHidden}`}
         >
           <h1 className="text-[2em]">{country}</h1>
           <h1 className="text-[1.5em]">{city}</h1>
@@ -195,13 +248,13 @@ function SearchBar() {
         <div
           className={`flex items-center justify-center flex-col w-[23em] ml-[0.5em] mt-[1.5em] ${displayError} md:mt-[2em]`}
         >
-          <h1 className="text-[1.2em]">
+          <h1 className="text-[1.2em] text-dark2_blue">
             Something is wrong, whether there is no result or your internet
             connection is bad
           </h1>
         </div>
         <div
-          className={`flex items-center justify-center flex-col w-[23em] ml-[3em] mt-[2em] ${displayLoading} md:mt-[4em]`}
+          className={`flex items-center justify-center flex-col w-[23em] ml-[3em] mt-[2em] ${displayLoading} md:mt-[4em] text-dark2_blue`}
         >
           <h1 className="text-[2em]">Loading ....</h1>
         </div>
