@@ -44,7 +44,7 @@ function SearchBar() {
     setHideSearchResults("hidden");
 
     await fetch(
-      `http://api.weatherapi.com/v1/search.json?key=${apiKey}&q=${input}`
+      `https://api.weatherapi.com/v1/search.json?key=${apiKey}&q=${input}`
     )
       .then((response) => {
         if (!response.ok) {
@@ -124,7 +124,7 @@ function SearchBar() {
     setMovePlaceHolder("transform translate-y-[0em] transition-all linear");
 
     await fetch(
-      `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`
+      `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`
     )
       .then((res) => {
         if (!res.ok) {
