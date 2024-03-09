@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 function SearchBar() {
   const apiKey = "ef05a7ca07b7488bb3031810242602";
@@ -9,14 +9,18 @@ function SearchBar() {
     useState("hidden");
   const [hideSearchResults, setHideSearchResults] = useState("hidden");
   const [initialSearch, setInitialSearch] = useState("");
-
   const [selectedItemIndex, setSelectedItemIndex] = useState(-1);
-
   const [isHovered, setIsHovered] = useState(false);
-
   const inputRef = useRef<HTMLInputElement>(null);
-
   const [movePlaceHolder, setMovePlaceHolder] = useState("");
+  const [cityNames, setCityNames] = useState<string[]>([]);
+  const [country, setCountry] = useState("");
+  const [city, setCity] = useState("");
+  const [condition, setCondition] = useState("");
+  const [temperature, setTemperature] = useState("");
+  const [infoHidden, setInfoHidden] = useState("hidden");
+  const [displayError, setDisplayError] = useState("hidden");
+  const [autoCompleteVisible, setAutoCompleteVisible] = useState(false);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!isHovered) {
@@ -37,7 +41,16 @@ function SearchBar() {
     }
   };
 
-  const [cityNames, setCityNames] = useState<string[]>([]);
+  useEffect(() => {
+    if (autoCompleteVisible) {
+      if (selectedItemIndex !== -1) {
+        const selectedCity = cityNames[selectedItemIndex];
+        setTextBoxValue(selectedCity); // Update the textbox value
+      } else {
+        setTextBoxValue(initialSearch);
+      }
+    }
+  }, [selectedItemIndex]);
 
   const fetchAutoCompleteData = async (input: string) => {
     setDisplayLoadingAutoComplete("block");
@@ -69,20 +82,33 @@ function SearchBar() {
     console.log(cityNames);
   };
 
+  useEffect(() => {
+    fetchAutoCompleteData;
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTextBoxValue(e.target.value);
-    setInitialSearch(e.target.value);
+
+    if (textBoxValue === initialSearch) {
+      setInitialSearch(e.target.value);
+    }
 
     fetchAutoCompleteData(e.target.value);
+    setSelectedItemIndex(-1);
   };
 
   const handleFocus = () => {
+    setAutoCompleteVisible(true);
     setAutoCompleteHidden("block");
+    setTextBoxValue(initialSearch);
 
     setMovePlaceHolder("transform translate-y-[-1.2em] transition-all linear");
   };
 
   const hideAutoComplete = () => {
+    setAutoCompleteVisible(false);
+    setSelectedItemIndex(-1);
+    setTextBoxValue("");
     setAutoCompleteHidden("hidden");
     setMovePlaceHolder("transform translate-y-[0em] transition-all linear");
   };
@@ -102,15 +128,9 @@ function SearchBar() {
   };
 
   const placeHolderClick = () => {
+    inputRef.current?.focus();
     setMovePlaceHolder("transform translate-y-[-1.2em] transition-all linear");
   };
-
-  const [country, setCountry] = useState("");
-  const [city, setCity] = useState("");
-  const [condition, setCondition] = useState("");
-  const [temperature, setTemperature] = useState("");
-  const [infoHidden, setInfoHidden] = useState("hidden");
-  const [displayError, setDisplayError] = useState("hidden");
 
   const getWeatherData = async (city: string) => {
     setDisplayLoading("block");
@@ -154,6 +174,10 @@ function SearchBar() {
       });
   };
 
+  useEffect(() => {
+    getWeatherData;
+  }, []);
+
   const handleSubmitBtn = () => {
     getWeatherData(textBoxValue);
   };
@@ -168,14 +192,14 @@ function SearchBar() {
 
   return (
     <div className="font-varela-round flex items-center justify-center h-screen bg-gradient-to-b from-dark1_blue to-dark2_blue">
-      <div className="flex items-center justify-center flex-col h-[20em] w-[28em] bg-light1_blue backdrop-blur-[40px]  rounded-xl md:w-[35em] z-20">
+      <div className="flex items-center justify-center flex-col h-[20em] w-[28em] bg-light2_blue backdrop-blur-[40px]  rounded-xl md:w-[35em] z-20">
         <div
           className="absolute w-screen h-screen z-0"
           onClick={hideAutoComplete}
         ></div>
         <div className="flex items-center justify-center flex-col md:flex-row z-10">
           <h1
-            className={`absolute ml-[1em] mb-[3.5em] bg-light1_blue font-bold text-dark2_blue md:mt-[3.5em] md:mr-[5.5em] ${movePlaceHolder}`}
+            className={`absolute ml-[1em] mb-[3.5em] bg-light2_blue font-bold text-dark2_blue md:mt-[3.5em] md:mr-[5.5em] ${movePlaceHolder}`}
             onClick={placeHolderClick}
           >
             Enter a city
@@ -217,7 +241,7 @@ function SearchBar() {
               </ul>
             </div>
             <input
-              className="text-black rounded-lg border-b-2 border-dark2_blue outline-none w-[24em] h-10 bg-light1_blue border-2 pl-12"
+              className="bg-light2_blue text-dark2_blue font-bold rounded-lg border-b-2 border-dark2_blue outline-none w-[24em] h-10 border-2 pl-12"
               type="text"
               name="search"
               ref={inputRef}
@@ -230,7 +254,7 @@ function SearchBar() {
           </div>
 
           <button
-            className="rounded-lg border-2 border-dark2_blue text-dark2_blue font-bold mt-[1em] ml-[1em] h-[2.5rem] w-[5em] bg-dark1_blue hover:bg-light1_blue transition ease-in-out duration-500 md:mt-0"
+            className="rounded-lg border-2 border-dark2_blue text-light1_blue font-bold mt-[1em] ml-[1em] h-[2.5rem] w-[5em] bg-dark2_blue hover:bg-light1_blue hover:text-dark2_blue transition ease-in-out duration-500 md:mt-0"
             onClick={handleSubmitBtn}
           >
             Submit
@@ -238,7 +262,7 @@ function SearchBar() {
         </div>
 
         <div
-          className={`flex items-center justify-center flex-col mt-[1em] ml-[1em] md:mt-[3em] text-dark2_blue ${infoHidden}`}
+          className={`flex items-center font-bold justify-center flex-col mt-[1em] ml-[1em] md:mt-[3em] text-dark2_blue ${infoHidden}`}
         >
           <h1 className="text-[2em]">{country}</h1>
           <h1 className="text-[1.5em]">{city}</h1>
