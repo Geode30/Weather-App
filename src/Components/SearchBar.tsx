@@ -1,7 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-
 function SearchBar() {
-  const apiKey = "ef05a7ca07b7488bb3031810242602";
   const [textBoxValue, setTextBoxValue] = useState("");
   const [autoCompleteHidden, setAutoCompleteHidden] = useState("hidden");
   const [displayLoading, setDisplayLoading] = useState("hidden");
@@ -18,9 +16,13 @@ function SearchBar() {
   const [city, setCity] = useState("");
   const [condition, setCondition] = useState("");
   const [temperature, setTemperature] = useState("");
+  const [lastUpdated, setLastUpdated] = useState("");
+  const [isDay, setIsDay] = useState("");
+  const [conditionIcon, setConditionIcon] = useState("");
   const [infoHidden, setInfoHidden] = useState("hidden");
   const [displayError, setDisplayError] = useState("hidden");
   const [autoCompleteVisible, setAutoCompleteVisible] = useState(false);
+  const [containerSize, setContainerSize] = useState("[20em]");
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!isHovered) {
@@ -57,7 +59,9 @@ function SearchBar() {
     setHideSearchResults("hidden");
 
     await fetch(
-      `https://api.weatherapi.com/v1/search.json?key=${apiKey}&q=${input}`
+      `https://api.weatherapi.com/v1/search.json?key=${
+        import.meta.env.VITE_WEATHER_API_KEY
+      }&q=${input}`
     )
       .then((response) => {
         if (!response.ok) {
@@ -137,6 +141,7 @@ function SearchBar() {
     setInfoHidden("hidden");
     setDisplayError("hidden");
     setAutoCompleteHidden("hidden");
+    setContainerSize("[auto] pt-[2em] pb-[2em] ");
 
     setTextBoxValue("");
     setInitialSearch("");
@@ -144,7 +149,9 @@ function SearchBar() {
     setMovePlaceHolder("transform translate-y-[0em] transition-all linear");
 
     await fetch(
-      `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`
+      `https://api.weatherapi.com/v1/current.json?key=${
+        import.meta.env.VITE_WEATHER_API_KEY
+      }&q=${city}`
     )
       .then((res) => {
         if (!res.ok) {
@@ -161,7 +168,12 @@ function SearchBar() {
         setCountry(data.location.country);
         setCity(data.location.name);
         setCondition(data.current.condition.text);
-        setTemperature(data.current.temp_c + " °C");
+        setTemperature(`${data.current.temp_c} °C`);
+        setLastUpdated(`Last Updated: ${data.current.last_updated}`);
+        setIsDay(() => (data.current.is_day === 1 ? "Day" : "Night"));
+        console.log(data.current.is_day);
+        setConditionIcon(data.current.condition.icon);
+        console.log(conditionIcon);
       })
       .catch((error) => {
         setDisplayLoading("hidden");
@@ -192,14 +204,16 @@ function SearchBar() {
 
   return (
     <div className="font-varela-round flex items-center justify-center h-screen bg-gradient-to-b from-dark1_blue to-dark2_blue">
-      <div className="flex items-center justify-center flex-col h-[20em] w-[28em] bg-light2_blue backdrop-blur-[40px]  rounded-xl md:w-[35em] z-20">
+      <div
+        className={`flex items-center justify-center flex-col h-${containerSize} w-[28em] bg-light2_blue bg-opacity-[0.8] backdrop-blur-[10px] shadow-3xl rounded-xl md:w-[35em] z-20`}
+      >
         <div
           className="absolute w-screen h-screen z-0"
           onClick={hideAutoComplete}
         ></div>
         <div className="flex items-center justify-center flex-col md:flex-row z-10">
           <h1
-            className={`absolute ml-[1em] mb-[3.5em] bg-light2_blue font-bold text-dark2_blue md:mt-[3.5em] md:mr-[5.5em] ${movePlaceHolder}`}
+            className={`absolute ml-[1em] mb-[3.5em] rounded-[1em] bg-light2_blue font-bold text-dark2_blue md:mt-[3.5em] md:mr-[5.5em] ${movePlaceHolder}`}
             onClick={placeHolderClick}
           >
             Enter a city
@@ -262,13 +276,30 @@ function SearchBar() {
         </div>
 
         <div
-          className={`flex items-center font-bold justify-center flex-col mt-[1em] ml-[1em] md:mt-[3em] text-dark2_blue ${infoHidden}`}
+          className={`flex items-center font-bold justify-center flex-col text-center text-dark2_blue mt-[3em] ml-[1em] md:ml-[0em] ${infoHidden}`}
         >
-          <h1 className="text-[2em]">{country}</h1>
-          <h1 className="text-[1.5em]">{city}</h1>
-          <h1 className="text-[1em]">{temperature}</h1>
-          <h1 className="text-[1em]">{condition}</h1>
+          <div className="flex items-center justify-center flex-col">
+            <h1 className="text-[2em]">{country}</h1>
+            <h1 className="text-[1.5em]">{city}</h1>
+          </div>
+          <div className="flex items-center justify-center flex-col">
+            <img
+              src={conditionIcon}
+              alt="WeatherIcon"
+              className="h-[12em] w-[15em]"
+            />
+          </div>
+          <div className="flex items-center justify-center flex-col text-[1em]">
+            <h1 className="text-[1.5em]">{isDay}</h1>
+            <h1>{temperature}</h1>
+            <h1>{condition}</h1>
+          </div>
         </div>
+        <h1
+          className={`text-[0.9em] text-center font-bold text-dark2_blue mt-[1em] ml-[1em] md:ml-[0em] ${infoHidden}`}
+        >
+          {lastUpdated}
+        </h1>
         <div
           className={`flex items-center justify-center flex-col w-[23em] ml-[0.5em] mt-[1.5em] ${displayError} md:mt-[2em]`}
         >
