@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 function SearchBar() {
+  const ApiKey = "ef05a7ca07b7488bb3031810242602";
   const [textBoxValue, setTextBoxValue] = useState("");
   const [autoCompleteHidden, setAutoCompleteHidden] = useState("hidden");
   const [displayLoading, setDisplayLoading] = useState("hidden");
@@ -22,7 +23,6 @@ function SearchBar() {
   const [infoHidden, setInfoHidden] = useState("hidden");
   const [displayError, setDisplayError] = useState("hidden");
   const [autoCompleteVisible, setAutoCompleteVisible] = useState(false);
-  const [containerSize, setContainerSize] = useState("[20em]");
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!isHovered) {
@@ -59,9 +59,10 @@ function SearchBar() {
     setHideSearchResults("hidden");
 
     await fetch(
-      `https://api.weatherapi.com/v1/search.json?key=${
-        import.meta.env.VITE_WEATHER_API_KEY
-      }&q=${input}`
+      `https://api.weatherapi.com/v1/search.json?key=${ApiKey}&q=${input}`
+      // `https://api.weatherapi.com/v1/search.json?key=${
+      //   import.meta.env.VITE_WEATHER_API_KEY
+      // }&q=${input}`
     )
       .then((response) => {
         if (!response.ok) {
@@ -141,7 +142,6 @@ function SearchBar() {
     setInfoHidden("hidden");
     setDisplayError("hidden");
     setAutoCompleteHidden("hidden");
-    setContainerSize("[auto] pt-[2em] pb-[2em] ");
 
     setTextBoxValue("");
     setInitialSearch("");
@@ -149,9 +149,10 @@ function SearchBar() {
     setMovePlaceHolder("transform translate-y-[0em] transition-all linear");
 
     await fetch(
-      `https://api.weatherapi.com/v1/current.json?key=${
-        import.meta.env.VITE_WEATHER_API_KEY
-      }&q=${city}`
+      `https://api.weatherapi.com/v1/current.json?key=${ApiKey}&q=${city}`
+      // `https://api.weatherapi.com/v1/current.json?key=${
+      //   import.meta.env.VITE_WEATHER_API_KEY
+      // }&q=${city}`
     )
       .then((res) => {
         if (!res.ok) {
@@ -171,9 +172,7 @@ function SearchBar() {
         setTemperature(`${data.current.temp_c} °C`);
         setLastUpdated(`Last Updated: ${data.current.last_updated}`);
         setIsDay(() => (data.current.is_day === 1 ? "Day" : "Night"));
-        console.log(data.current.is_day);
         setConditionIcon(data.current.condition.icon);
-        console.log(conditionIcon);
       })
       .catch((error) => {
         setDisplayLoading("hidden");
@@ -205,7 +204,7 @@ function SearchBar() {
   return (
     <div className="font-varela-round flex items-center justify-center h-screen bg-gradient-to-b from-dark1_blue to-dark2_blue">
       <div
-        className={`flex items-center justify-center flex-col h-${containerSize} w-[28em] bg-light2_blue bg-opacity-[0.8] backdrop-blur-[10px] shadow-3xl rounded-xl md:w-[35em] z-20`}
+        className={`flex items-center justify-center flex-col h-[auto] pb-[2em] pt-[2em] w-[28em] bg-light2_blue bg-opacity-[0.8] backdrop-blur-[10px] shadow-3xl rounded-xl md:w-[35em] z-20`}
       >
         <div
           className="absolute w-screen h-screen z-0"
@@ -276,7 +275,7 @@ function SearchBar() {
         </div>
 
         <div
-          className={`flex items-center font-bold justify-center flex-col text-center text-dark2_blue mt-[3em] ml-[1em] md:ml-[0em] ${infoHidden}`}
+          className={`flex items-center font-bold justify-center flex-col text-center text-dark2_blue mt-[3em] ml-[1em] ${infoHidden}`}
         >
           <div className="flex items-center justify-center flex-col">
             <h1 className="text-[2em]">{country}</h1>
@@ -296,7 +295,7 @@ function SearchBar() {
           </div>
         </div>
         <h1
-          className={`text-[0.9em] text-center font-bold text-dark2_blue mt-[1em] ml-[1em] md:ml-[0em] ${infoHidden}`}
+          className={`text-[0.9em] text-center font-bold text-dark2_blue mt-[1em] ml-[1em] ${infoHidden}`}
         >
           {lastUpdated}
         </h1>
