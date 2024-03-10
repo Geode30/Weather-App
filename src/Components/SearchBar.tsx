@@ -201,6 +201,31 @@ function SearchBar() {
     setInitialSearch("");
   };
 
+  const [textBoxSize, setTextBoxSize] = useState("w-[0em]");
+  const [textBoxVisible, setTextBoxVisible] = useState("invisible");
+  const [placeHolderVisible, setPlaceHolderVisible] = useState("hidden");
+  const [searchBtnML, setSearchBtnML] = useState("ml-[0.8em]");
+  const [submitBtnVisible, setSubmitBtnVisible] = useState("hidden");
+
+  const searchBtn = () => {
+    setTextBoxVisible("visible");
+    setSearchBtnML("ml-0");
+
+    setTimeout(showTextBox, 1);
+  };
+
+  const showTextBox = () => {
+    setTextBoxSize("transition-all duration-500 linear w-[24em]");
+
+    setTimeout(showPlaceHolder, 500);
+  };
+
+  const showPlaceHolder = () => {
+    setPlaceHolderVisible("block");
+    setSubmitBtnVisible("block");
+    inputRef.current?.focus();
+  };
+
   return (
     <div className="font-varela-round flex items-center justify-center h-screen bg-gradient-to-b from-dark1_blue to-dark2_blue">
       <div
@@ -212,17 +237,20 @@ function SearchBar() {
         ></div>
         <div className="flex items-center justify-center flex-col md:flex-row z-10">
           <h1
-            className={`absolute ml-[1em] mb-[3.5em] rounded-[1em] bg-light2_blue font-bold text-dark2_blue md:mt-[3.5em] md:mr-[5.5em] ${movePlaceHolder}`}
+            className={`absolute ml-[1em] mb-[3.5em] rounded-[1em] bg-light2_blue font-bold text-dark2_blue md:mt-[3.5em] md:mr-[5.5em] ${movePlaceHolder} ${placeHolderVisible}`}
             onClick={placeHolderClick}
           >
             Enter a city
           </h1>
           <div>
-            <div className="absolute bg-dark2_blue h-[2.4em] flex items-center justify-center rounded-[0.3em] w-[2.5em]">
+            <div
+              className={`absolute bg-dark2_blue h-[2.4em] ${searchBtnML} flex items-center justify-center rounded-[0.3em] w-[2.5em]`}
+            >
               <img
                 src="./src/Images/search_icon.png"
                 alt="search"
                 className="h-[1.5em]"
+                onClick={searchBtn}
               />
             </div>
 
@@ -234,7 +262,7 @@ function SearchBar() {
                 <li
                   className={`flex bg-dark2_blue text-light1_blue hover:bg-light1_blue hover:text-dark2_blue w-[24em] h-max pt-[0.8em] pb-[0.8em] pl-[3em] cursor-pointer ${displayLoadingAutoComplete}`}
                 >
-                  Loading ...
+                  <div className="border-t-4 border-blue-500 border-opacity-25 border-b-4 border-blue-500 border-solid h-[1em] w-[1em] rounded-full animate-spin"></div>
                 </li>
                 {cityNames.map((name, index) => (
                   <li
@@ -254,7 +282,7 @@ function SearchBar() {
               </ul>
             </div>
             <input
-              className="bg-light2_blue text-dark2_blue font-bold rounded-lg border-b-2 border-dark2_blue outline-none w-[24em] h-10 border-2 pl-12"
+              className={`bg-light2_blue text-dark2_blue font-bold rounded-lg border-b-2 border-dark2_blue outline-none ${textBoxSize} ${textBoxVisible} h-10 border-2 pl-12`}
               type="text"
               name="search"
               ref={inputRef}
@@ -267,7 +295,7 @@ function SearchBar() {
           </div>
 
           <button
-            className="rounded-lg border-2 border-dark2_blue text-light1_blue font-bold mt-[1em] ml-[1em] h-[2.5rem] w-[5em] bg-dark2_blue hover:bg-light1_blue hover:text-dark2_blue transition ease-in-out duration-500 md:mt-0"
+            className={`rounded-lg border-2 border-dark2_blue text-light1_blue font-bold mt-[1em] ml-[1em] h-[2.5rem] w-[5em] bg-dark2_blue hover:bg-light1_blue hover:text-dark2_blue transition ease-in-out duration-500 md:mt-0 ${submitBtnVisible}`}
             onClick={handleSubmitBtn}
           >
             Submit
@@ -302,7 +330,7 @@ function SearchBar() {
         <div
           className={`flex items-center justify-center flex-col w-[23em] ml-[0.5em] mt-[1.5em] ${displayError} md:mt-[2em]`}
         >
-          <h1 className="text-[1.2em] text-dark2_blue">
+          <h1 className="text-[1.2em] text-dark2_blue font-bold">
             Something is wrong, whether there is no result or your internet
             connection is bad
           </h1>
@@ -310,7 +338,7 @@ function SearchBar() {
         <div
           className={`flex items-center justify-center flex-col w-[23em] ml-[3em] mt-[2em] ${displayLoading} md:mt-[4em] text-dark2_blue`}
         >
-          <h1 className="text-[2em]">Loading ....</h1>
+          <div className="border-t-4 border-blue-500 border-opacity-25 border-b-4 border-blue-500 border-solid h-16 w-16 rounded-full animate-spin mr-[2em]"></div>
         </div>
       </div>
     </div>
