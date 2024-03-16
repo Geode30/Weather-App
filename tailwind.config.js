@@ -11,6 +11,8 @@ export default {
       "light2_blue": "#B4D4FF",
       "dark1_blue": "#86B6F6",
       "dark2_blue": "#176B87",
+      "darkMode_BG": "#102a43",
+      "darkMode_PH" : "#486581",
       'blue': '#1fb6ff',
       'pink': '#ff49db',
       'orange': '#ff7849',
