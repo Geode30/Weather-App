@@ -221,11 +221,7 @@ function SearchBar() {
             <div
               className={`absolute bg-darkMode_BG h-[2.4em] flex items-center justify-center rounded-[0.3em] w-[2.5em]`}
             >
-              <img
-                src="src/Images/search_icon.png"
-                alt="search"
-                className="h-[1.5em]"
-              />
+              <img src="/search_icon.png" alt="search" className="h-[1.5em]" />
             </div>
 
             <div
