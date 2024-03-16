@@ -225,12 +225,12 @@ function SearchBar() {
             </div>
 
             <div
-              className={`absolute flex items-start flex-col w-[24em] h-max bg-light1_blue mt-[2.3em] z-30 ${autoCompleteHidden}`}
+              className={`absolute flex items-start flex-col w-[20em] md:w-[24em] h-max bg-light1_blue mt-[2.3em] z-30 ${autoCompleteHidden}`}
               onMouseOut={outOfFocus}
             >
               <ul>
                 <li
-                  className={`font-bold flex bg-darkMode_BG text-light1_blue hover:bg-light1_blue hover:text-darkMode_BG w-[24em] h-max pt-[0.8em] pb-[0.8em] pl-[3em] cursor-pointer ${displayLoadingAutoComplete}`}
+                  className={`font-bold flex bg-darkMode_BG text-light1_blue hover:bg-light1_blue hover:text-darkMode_BG w-[20em] md:w-[24em] h-max pt-[0.8em] pb-[0.8em] pl-[3em] cursor-pointer ${displayLoadingAutoComplete}`}
                 >
                   <div className="border-t-4 border-blue-500 border-opacity-25 border-b-4 border-blue-500 border-solid h-[1em] w-[1em] rounded-full animate-spin"></div>
                 </li>
@@ -238,8 +238,8 @@ function SearchBar() {
                   <li
                     className={
                       index === selectedItemIndex
-                        ? ` font-bold flex bg-light1_blue text-darkMode_BG hover:bg-light1_blue hover:text-darkMode_BG w-[24em] h-max pt-[0.8em] pb-[0.8em] pl-[3em] cursor-pointer ${hideSearchResults}`
-                        : `font-bold flex bg-darkMode_BG text-light1_blue hover:bg-light1_blue hover:text-darkMode_BG w-[24em] h-max pt-[0.8em] pb-[0.8em] pl-[3em] cursor-pointer ${hideSearchResults}`
+                        ? ` font-bold flex bg-light1_blue text-darkMode_BG hover:bg-light1_blue hover:text-darkMode_BG w-[20em] md:w-[24em] h-max pt-[0.8em] pb-[0.8em] pl-[3em] cursor-pointer ${hideSearchResults}`
+                        : `font-bold flex bg-darkMode_BG text-light1_blue hover:bg-light1_blue hover:text-darkMode_BG w-[20em] md:w-[24em] h-max pt-[0.8em] pb-[0.8em] pl-[3em] cursor-pointer ${hideSearchResults}`
                     }
                     key={index}
                     onClick={() => handleAutoComplete(name)}
