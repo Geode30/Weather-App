@@ -107,7 +107,9 @@ function SearchBar() {
     setAutoCompleteHidden("block");
     setTextBoxValue(initialSearch);
 
-    setMovePlaceHolder("transform translate-y-[-1.2em] transition-all linear");
+    setMovePlaceHolder(
+      "transform translate-y-[-1.2em] transition-transform linear"
+    );
   };
 
   const hideAutoComplete = () => {
@@ -115,7 +117,9 @@ function SearchBar() {
     setSelectedItemIndex(-1);
     setTextBoxValue("");
     setAutoCompleteHidden("hidden");
-    setMovePlaceHolder("transform translate-y-[0em] transition-all linear");
+    setMovePlaceHolder(
+      "transform translate-y-[0em] transition-transform linear"
+    );
   };
 
   const focusSearch = (name: string) => {
@@ -134,7 +138,9 @@ function SearchBar() {
 
   const placeHolderClick = () => {
     inputRef.current?.focus();
-    setMovePlaceHolder("transform translate-y-[-1.2em] transition-all linear");
+    setMovePlaceHolder(
+      "transform translate-y-[-1.2em] transition-transform linear"
+    );
   };
 
   const getWeatherData = async (city: string) => {
@@ -145,8 +151,11 @@ function SearchBar() {
 
     setTextBoxValue("");
     setInitialSearch("");
+    setSelectedItemIndex(-1);
     inputRef.current?.blur();
-    setMovePlaceHolder("transform translate-y-[0em] transition-all linear");
+    setMovePlaceHolder(
+      "transform translate-y-[0em] transition-transform linear"
+    );
 
     await fetch(
       `https://api.weatherapi.com/v1/current.json?key=${ApiKey}&q=${city}`
@@ -201,10 +210,70 @@ function SearchBar() {
     setInitialSearch("");
   };
 
+  const [searchBarVisible, setSearchBarVisible] = useState(false);
+  const [titleVisible, setTitleVisible] = useState(true);
+  const [containerWidthBig, setContainerWidthBig] = useState("5em");
+  const [containerWidthSM, setContainerWidthSM] = useState("5em");
+
+  const changeContainerWidth = () => {
+    setContainerWidthBig("35em");
+    setContainerWidthSM("24em");
+    setTimeout(changeTextBoxWidth, 500);
+  };
+
+  const startBtn = () => {
+    setSearchBarVisible(true);
+    setTitleVisible(false);
+    setTimeout(changeContainerWidth, 10);
+  };
+
+  const [textBoxWidthBig, setTextBoxWidthBig] = useState("5em");
+  const [textBoxWidthSM, setTextBoxWidthSM] = useState("5em");
+  const [textboxVisible, setTextBoxVisible] = useState("invisible");
+  const [placeHolderOpacity, setPlaceHolderOpacity] = useState("0");
+  const [submitBtnVisible, setSubmitBtnVisible] = useState("invisible");
+  const [submitBtnOpacity, setSubmitBtnOpacity] = useState("0");
+  const [searchIconVisible, setSearchIconVisible] = useState("invisible");
+  const [searchIconOpacity, setSearchIconOpacity] = useState("0");
+
+  const changePlaceHolderOpacity = () => {
+    setPlaceHolderOpacity("1");
+    setSubmitBtnVisible("visible");
+    setSubmitBtnOpacity("1");
+    setSearchIconVisible("visible");
+    setSearchIconOpacity("1");
+  };
+
+  const changeTextBoxWidth = () => {
+    setTextBoxVisible("visible");
+    setTextBoxWidthBig("24em");
+    setTextBoxWidthSM("20em");
+    setTimeout(changePlaceHolderOpacity, 500);
+  };
+
   return (
     <div className="font-varela-round flex items-center justify-center h-screen bg-gradient-to-b from-darkMode_BG to-darkMode_PH">
       <div
-        className={`flex items-center justify-center flex-col h-[auto] pb-[2em] pt-[2em] w-[23em] bg-darkMode_PH bg-opacity-[0.8] backdrop-blur-[10px] shadow-3xl rounded-xl md:w-[35em] z-20`}
+        className={`flex items-center justify-center flex-col ${
+          titleVisible ? "block" : "hidden"
+        }`}
+      >
+        <h1
+          className={`text-light1_blue text-[3em] text-center font-bold ml-[0.5em] mr-[0.5em]`}
+        >
+          Weather Web App by Jhio
+        </h1>
+        <button
+          className={`rounded-lg border-2 border-light1_blue text-darkMode_BG font-bold mt-[1em] ml-[1em] h-[2.5rem] w-[5em] bg-light1_blue hover:bg-darkMode_BG hover:text-light1_blue transition ease-in-out duration-500`}
+          onClick={startBtn}
+        >
+          Start
+        </button>
+      </div>
+      <div
+        className={`transform transition-all duration-500 flex items-center justify-center flex-col h-[auto] pb-[2em] pt-[2em] w-[${containerWidthSM}] bg-darkMode_PH bg-opacity-[0.8] backdrop-blur-[10px] shadow-3xl rounded-xl md:w-[${containerWidthBig}] z-20 ${
+          searchBarVisible ? "block" : "hidden"
+        }`}
       >
         <div
           className="absolute w-screen h-screen z-0"
@@ -212,18 +281,22 @@ function SearchBar() {
         ></div>
         <div className="flex items-center justify-center flex-col md:flex-row z-10">
           <h1
-            className={`absolute ml-[1em] mb-[3.5em] rounded-[0.5em] bg-darkMode_BG font-bold text-light1_blue md:mt-[3.5em] md:mr-[5.5em] ${movePlaceHolder}`}
+            className={`absolute ml-[1em] mb-[3.5em] rounded-[0.5em] bg-darkMode_BG font-bold text-light1_blue md:mt-[3.5em] md:mr-[5.5em] z-[1] transform transition-[opacity] duration-300 opacity-[${placeHolderOpacity}] ${movePlaceHolder}`}
             onClick={placeHolderClick}
           >
             Enter a city
           </h1>
           <div>
             <div
-              className={`absolute bg-darkMode_BG h-[2.4em] flex items-center justify-center rounded-[0.3em] w-[2.5em]`}
+              className={`absolute bg-darkMode_BG h-[2.4em] flex items-center justify-center rounded-[0.3em] w-[2.5em] z-[1] ${searchIconVisible}`}
+              onClick={placeHolderClick}
             >
-              <img src="/search_icon.png" alt="search" className="h-[1.5em]" />
+              <img
+                src="/search_icon.png"
+                alt="search"
+                className={`h-[1.5em] ml-[1em] z-[1] transform transition-all duration-500 opacity-[${searchIconOpacity}]`}
+              />
             </div>
-
             <div
               className={`absolute flex items-start flex-col w-[20em] md:w-[24em] h-max bg-light1_blue mt-[2.3em] z-30 ${autoCompleteHidden}`}
               onMouseOut={outOfFocus}
@@ -252,7 +325,7 @@ function SearchBar() {
               </ul>
             </div>
             <input
-              className={`bg-darkMode_BG text-light1_blue font-bold rounded-lg border-b-2 border-darkMode_BG outline-none h-10 border-2 pl-12 w-[20em] md:w-[24em]`}
+              className={`bg-darkMode_BG text-light1_blue font-bold rounded-lg border-b-2 border-darkMode_BG outline-none h-10 border-2 pl-12 w-[${textBoxWidthSM}] transform transition-all duration-500 md:w-[${textBoxWidthBig}] ${textboxVisible}`}
               type="text"
               name="search"
               ref={inputRef}
@@ -265,7 +338,7 @@ function SearchBar() {
           </div>
 
           <button
-            className={`rounded-lg border-2 border-darkMode_BG text-light1_blue font-bold mt-[1em] ml-[1em] h-[2.5rem] w-[5em] bg-darkMode_BG hover:bg-light1_blue hover:text-darkMode_BG transition ease-in-out duration-500 md:mt-0`}
+            className={`rounded-lg border-2 border-darkMode_BG text-light1_blue font-bold mt-[1em] ml-[1em] h-[2.5rem] w-[5em] bg-darkMode_BG hover:bg-light1_blue hover:text-darkMode_BG transition ease-in-out duration-500 md:mt-0 opacity-[${submitBtnOpacity}] ${submitBtnVisible}`}
             onClick={handleSubmitBtn}
           >
             Submit
