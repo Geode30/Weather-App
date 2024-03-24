@@ -212,12 +212,12 @@ function SearchBar() {
 
   const [searchBarVisible, setSearchBarVisible] = useState(false);
   const [titleVisible, setTitleVisible] = useState(true);
-  const [containerWidthBig, setContainerWidthBig] = useState("5em");
-  const [containerWidthSM, setContainerWidthSM] = useState("5em");
+  const [containerWidthBig, setContainerWidthBig] = useState("md:w-[5em]");
+  const [containerWidthSM, setContainerWidthSM] = useState("w-[5em]");
 
   const changeContainerWidth = () => {
-    setContainerWidthBig("35em");
-    setContainerWidthSM("24em");
+    setContainerWidthBig("md:w-[35em]");
+    setContainerWidthSM("w-[24em]");
     setTimeout(changeTextBoxWidth, 500);
   };
 
@@ -227,27 +227,27 @@ function SearchBar() {
     setTimeout(changeContainerWidth, 10);
   };
 
-  const [textBoxWidthBig, setTextBoxWidthBig] = useState("5em");
-  const [textBoxWidthSM, setTextBoxWidthSM] = useState("5em");
+  const [textBoxWidthBig, setTextBoxWidthBig] = useState("md:w-[5em]");
+  const [textBoxWidthSM, setTextBoxWidthSM] = useState("w-[5em]");
   const [textboxVisible, setTextBoxVisible] = useState("invisible");
-  const [placeHolderOpacity, setPlaceHolderOpacity] = useState("0");
+  const [placeHolderOpacity, setPlaceHolderOpacity] = useState("opacity-0");
   const [submitBtnVisible, setSubmitBtnVisible] = useState("invisible");
-  const [submitBtnOpacity, setSubmitBtnOpacity] = useState("0");
+  const [submitBtnOpacity, setSubmitBtnOpacity] = useState("opacity-0");
   const [searchIconVisible, setSearchIconVisible] = useState("invisible");
-  const [searchIconOpacity, setSearchIconOpacity] = useState("0");
+  const [searchIconOpacity, setSearchIconOpacity] = useState("opacity-0");
 
   const changePlaceHolderOpacity = () => {
-    setPlaceHolderOpacity("1");
+    setPlaceHolderOpacity("opacity-1");
     setSubmitBtnVisible("visible");
-    setSubmitBtnOpacity("1");
+    setSubmitBtnOpacity("opacity-1");
     setSearchIconVisible("visible");
-    setSearchIconOpacity("1");
+    setSearchIconOpacity("opacity-1");
   };
 
   const changeTextBoxWidth = () => {
     setTextBoxVisible("visible");
-    setTextBoxWidthBig("24em");
-    setTextBoxWidthSM("20em");
+    setTextBoxWidthBig("md:w-[24em]");
+    setTextBoxWidthSM("w-[20em]");
     setTimeout(changePlaceHolderOpacity, 500);
   };
 
@@ -271,7 +271,7 @@ function SearchBar() {
         </button>
       </div>
       <div
-        className={`transform transition-all duration-500 flex items-center justify-center flex-col h-[auto] pb-[2em] pt-[2em] w-[${containerWidthSM}] bg-darkMode_PH bg-opacity-[0.8] backdrop-blur-[10px] shadow-3xl rounded-xl md:w-[${containerWidthBig}] z-20 ${
+        className={`transform transition-all duration-500 flex items-center justify-center flex-col h-[auto] pb-[2em] pt-[2em] ${containerWidthSM} bg-darkMode_PH bg-opacity-[0.8] backdrop-blur-[10px] shadow-3xl rounded-xl ${containerWidthBig} z-20 ${
           searchBarVisible ? "block" : "hidden"
         }`}
       >
@@ -281,7 +281,7 @@ function SearchBar() {
         ></div>
         <div className="flex items-center justify-center flex-col md:flex-row z-10">
           <h1
-            className={`absolute ml-[1em] mb-[3.5em] rounded-[0.5em] bg-darkMode_BG font-bold text-light1_blue md:mt-[3.5em] md:mr-[5.5em] z-[1] transform transition-[opacity] duration-300 opacity-[${placeHolderOpacity}] ${movePlaceHolder}`}
+            className={`absolute ml-[1em] mb-[3.5em] rounded-[0.5em] bg-darkMode_BG font-bold text-light1_blue md:mt-[3.5em] md:mr-[5.5em] z-[1] transform transition-[opacity] duration-300 ${placeHolderOpacity} ${movePlaceHolder}`}
             onClick={placeHolderClick}
           >
             Enter a city
@@ -294,7 +294,7 @@ function SearchBar() {
               <img
                 src="/search_icon.png"
                 alt="search"
-                className={`h-[1.5em] ml-[1em] z-[1] transform transition-all duration-500 opacity-[${searchIconOpacity}]`}
+                className={`h-[1.5em] ml-[1em] z-[1] transform transition-all duration-500 ${searchIconOpacity}`}
               />
             </div>
             <div
@@ -325,7 +325,7 @@ function SearchBar() {
               </ul>
             </div>
             <input
-              className={`bg-darkMode_BG text-light1_blue font-bold rounded-lg border-b-2 border-darkMode_BG outline-none h-10 border-2 pl-12 w-[${textBoxWidthSM}] transform transition-all duration-500 md:w-[${textBoxWidthBig}] ${textboxVisible}`}
+              className={`bg-darkMode_BG text-light1_blue font-bold rounded-lg border-b-2 border-darkMode_BG outline-none h-10 border-2 pl-12 ${textBoxWidthSM} transform transition-all duration-500 ${textBoxWidthBig} ${textboxVisible}`}
               type="text"
               name="search"
               ref={inputRef}
@@ -338,7 +338,7 @@ function SearchBar() {
           </div>
 
           <button
-            className={`rounded-lg border-2 border-darkMode_BG text-light1_blue font-bold mt-[1em] ml-[1em] h-[2.5rem] w-[5em] bg-darkMode_BG hover:bg-light1_blue hover:text-darkMode_BG transition ease-in-out duration-500 md:mt-0 opacity-[${submitBtnOpacity}] ${submitBtnVisible}`}
+            className={`rounded-lg border-2 border-darkMode_BG text-light1_blue font-bold mt-[1em] ml-[1em] h-[2.5rem] w-[5em] bg-darkMode_BG hover:bg-light1_blue hover:text-darkMode_BG transition ease-in-out duration-500 md:mt-0 ${submitBtnOpacity} ${submitBtnVisible}`}
             onClick={handleSubmitBtn}
           >
             Submit
